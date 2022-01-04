@@ -1,0 +1,6 @@
+.header-bg {
+  background-color:#17a2b8;
+  background-image: linear-gradient(180deg, #1dd1ec 0%, #17a2b8 52%, #0e626e 90%);
+  background-size: 1px 100px;
+  background-position: 1 -10px;
+}
