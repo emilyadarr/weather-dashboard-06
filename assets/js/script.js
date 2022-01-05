@@ -1,5 +1,45 @@
+var searchEl = document.querySelector("#city-form");
+var locationInputEl = document.querySelector("#location-input");
 
+var formSubmitHandler = function(event) {
+  event.preventDefault();
+  //get value form input element
+  var locationName = locationInputEl.value.trim();
 
+  if (locationName) {
+    getLocationWeather(locationName);
+    locationInputEl.value = "";
+  }
+  else {
+    alert("Please enter a location");
+  }
+  console.log(locationName);
+};
+
+var getLocationWeather = function(location) {
+  //format api url
+  var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + location + "&appid=51c677018609a1c353939bc35d4c5730";
+
+  // make a request to the url
+  fetch(apiUrl)
+    .then(function(response) {
+      // request was successful
+      if (response.ok) {
+        response.json().then(function(data) {
+          console.log(data, location);
+        });
+      }
+      else {
+        alert("Error: Location not found");
+      }
+    })
+    .catch(function(error) {
+      alert("Unable to connect to Open Weather");
+    });
+};
+
+searchEl.addEventListener("submit", formSubmitHandler);
+//getLocationWeather();
 
 // User Story
 // AS A traveler
