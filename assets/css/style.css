@@ -4,3 +4,7 @@
   background-size: 3px 200px;
   background-position: 0 -10px;
 }
+
+.card-body {
+  padding: 5px;
+}
