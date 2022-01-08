@@ -15,7 +15,7 @@ var formSubmitHandler = function(event) {
   else {
     alert("Please enter a location");
   }
-  console.log(locationName);
+  //console.log(locationName);
 };
 
 var getLocationWeather = function(location) {
@@ -29,7 +29,7 @@ var getLocationWeather = function(location) {
         response.json().then(function(locationResponse) {
           var lat = locationResponse[0].lat;
           var lon = locationResponse[0].lon;
-          console.log(lat, lon);
+          //console.log(lat, lon);
 
           var apiUrlLocation = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon +"&exclude=minutely,hourly,alerts&units=imperial&appid=51c677018609a1c353939bc35d4c5730";
           fetch(apiUrlLocation)
@@ -60,34 +60,62 @@ var getLocationWeather = function(location) {
 };
 
 var displayWeather = function(data, location) {
-  console.log(location);
+  // clear old content
+  weatherEl.textContent = "";
+
+
+  //console.log(location);
   var weatherTodayCard = document.createElement("div");
   var cardBody = document.createElement("div");
   var cityName = document.createElement("h4");
+  var date = moment(data.current.dt *1000).format("M/D/YYYY");
   var currentIcon = data.current.weather[0].icon;
   var currentIconEl = document.createElement("span");
   var currentTemp = document.createElement("p");
   var currentWind = document.createElement("p");
   var currentHumidity = document.createElement("p");
   var currentUV = document.createElement("p");
-
+  var currentUVEl = document.createElement("div");
+  var UV = data.current.uvi;
+    
 
   weatherTodayCard.setAttribute("class", "card");
   cardBody.setAttribute("class", "card-body");
   cityName.setAttribute("class", "card-title");
-  cityName.textContent = location;
+  cityName.textContent = location + " (" + date +")";
   currentIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + currentIcon + ".png'>"
-  console.log(currentIcon);
+  //console.log(currentIcon);
   currentTemp.textContent = "Temp: " + data.current.temp + "°F";
   currentWind.textContent = "Wind: " + data.current.wind_speed + " MPH";
   currentHumidity.textContent = "Humidity: " + data.current.humidity + "%";
-  currentUV.textContent = "UV Index: " + data.current.uvi;
+  currentUV.textContent = "UV Index: ";
+  currentUV.classList = "d-flex flex-row";
+  currentUVEl.textContent = UV;
 
+  currentUV.appendChild(currentUVEl);
   cityName.appendChild(currentIconEl);
   cardBody.append(cityName, currentTemp, currentWind, currentHumidity, currentUV);
   weatherTodayCard.appendChild(cardBody);
   weatherEl.appendChild(weatherTodayCard);
 
+  //console.log(currentUVEl, UV);
+  auditUV(currentUVEl, UV);
+};
+
+var auditUV = function(currentUVEl, UV) {
+  //console.log(currentUVEl, UV);
+  if (UV < 3) {
+    $(currentUVEl).removeClass("uv-mod uv-high");
+    $(currentUVEl).addClass("uv-low");
+  }
+  else if (UV >= 3 && UV < 8) {
+    UV.removeClass("uv-low uv-high");
+    UV.addClass("uv-mod");
+  }
+  else if (UV >= 8) {
+    UV.removeClass("uv-mod uv-low");
+    UV.addClass("uv-high");
+  }
 };
 
 var displayForecast = function(data) {
@@ -104,7 +132,7 @@ var displayForecast = function(data) {
   //loop over daily forecast
   for (var i=1; i < 6; i++) {
     var date = moment(data.daily[i].dt *1000).format("M/D/YYYY");
-    console.log(date);
+    //console.log(date);
 
     //create a container for each day
     var dayCard = document.createElement("div");
@@ -135,6 +163,8 @@ var displayForecast = function(data) {
   }
 
 };
+
+// TODO: Local storage - location history buttons 
 
 searchEl.addEventListener("submit", formSubmitHandler);
 //getLocationWeather();
