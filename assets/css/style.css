@@ -32,3 +32,8 @@
   margin-left: 10px;
   border-radius: 5px;
 }
+
+#search-history {
+  margin-top: 10px;
+  border-top: #0e626e solid;
+}
