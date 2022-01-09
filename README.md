@@ -4,4 +4,4 @@ Weather dashboard built with HTML, CSS and JavaScript using Open Weather One Cal
 
 https://emilyadarr.github.io/weather-dashboard-06/
 
-![image](https://github.com/emilyadarr/weather-dashboard-06/blob/aa2109750269e9cb2c72bddbbbdb2afecb3509b8/assets/images/weather-dashboard-screenshot.png)
+![image](https://github.com/emilyadarr/weather-dashboard-06/blob/47a79161b06c486a779f6d9a157ff128a71fddbe/assets/images/weather-dashboard-screenshot.png)
