@@ -34,7 +34,7 @@ var formSubmitHandler = function(event) {
 // function to get weather information from Open Weather API
 var getLocationWeather = function(location) {
   // format api url
-  var apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + location + "&limit=5&appid=51c677018609a1c353939bc35d4c5730";
+  var apiUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + location + "&limit=5&appid=51c677018609a1c353939bc35d4c5730";
   // make a request to the url
   fetch(apiUrl)
     .then(function(response) {
@@ -93,7 +93,7 @@ var displayWeather = function(data, location) {
   cardBody.setAttribute("class", "card-body");
   cityName.setAttribute("class", "card-title");
   cityName.textContent = location + " (" + date +")";
-  currentIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + currentIcon + ".png'>"
+  currentIconEl.innerHTML = "<img src='https://openweathermap.org/img/wn/" + currentIcon + ".png'>"
   currentTemp.textContent = "Temp: " + data.current.temp + "°F";
   currentWind.textContent = "Wind: " + data.current.wind_speed + " MPH";
   currentHumidity.textContent = "Humidity: " + data.current.humidity + "%";
@@ -156,7 +156,7 @@ var displayForecast = function(data) {
     dayCardBody.classList = "card-body";
     dayCardDate.classList = "card-title";
     dayCardDate.textContent = date;
-    dayIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + dayIcon + ".png'>"
+    dayIconEl.innerHTML = "<img src='https://openweathermap.org/img/wn/" + dayIcon + ".png'>"
     dayTemp.classList = "card-text";
     dayTemp.textContent = "Temp: " + data.daily[i].temp.day + "°F";
     dayWind.classList = "card-text";
