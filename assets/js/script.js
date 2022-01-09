@@ -1,25 +1,39 @@
 var searchEl = document.querySelector("#city-form");
 var locationInputEl = document.querySelector("#location-input");
 var weatherEl = document.querySelector("#weather");
-//var forecastEl = document.querySelector("#five-day-forecast");
+var weatherHistoryEl = document.querySelector("#search-history");
 
+// formSubmitHandler 
+var locations = JSON.parse(window.localStorage.getItem("locations")) || [];
 var formSubmitHandler = function(event) {
   event.preventDefault();
-  //get value form input element
-  var locationName = locationInputEl.value.trim();
+  // get value from input element
+  const locationName = locationInputEl.value.trim();
 
+  // push location name into locations array and save to local storage
   if (locationName) {
     getLocationWeather(locationName);
+    locations.push(locationName);
+    window.localStorage.setItem("locations", JSON.stringify(locations));
     locationInputEl.value = "";
+    // add new button in search history
+    var newLocationButton = document.createElement("button");
+    newLocationButton.classList = "btn btn-secondary btn-block mt-2";
+    newLocationButton.setAttribute("type", "submit");
+    newLocationButton.innerText = locationName;
+    weatherHistoryEl.appendChild(newLocationButton);
+    newLocationButton.addEventListener("click", function() {
+      getLocationWeather(locationName);
+    });
   }
   else {
     alert("Please enter a location");
   }
-  //console.log(locationName);
 };
 
+// function to get weather information from Open Weather API
 var getLocationWeather = function(location) {
-  //format api url
+  // format api url
   var apiUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + location + "&limit=5&appid=51c677018609a1c353939bc35d4c5730";
   // make a request to the url
   fetch(apiUrl)
@@ -29,14 +43,12 @@ var getLocationWeather = function(location) {
         response.json().then(function(locationResponse) {
           var lat = locationResponse[0].lat;
           var lon = locationResponse[0].lon;
-          //console.log(lat, lon);
 
           var apiUrlLocation = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon +"&exclude=minutely,hourly,alerts&units=imperial&appid=51c677018609a1c353939bc35d4c5730";
           fetch(apiUrlLocation)
             .then(function(response) {
               if (response.ok) {
                 response.json().then(function(data) {
-                  console.log(data, location);
                   displayWeather(data, location);
                   displayForecast(data);
                 })
@@ -59,12 +71,11 @@ var getLocationWeather = function(location) {
     });
 };
 
+// display current weather 
 var displayWeather = function(data, location) {
   // clear old content
   weatherEl.textContent = "";
 
-
-  //console.log(location);
   var weatherTodayCard = document.createElement("div");
   var cardBody = document.createElement("div");
   var cityName = document.createElement("h4");
@@ -77,14 +88,12 @@ var displayWeather = function(data, location) {
   var currentUV = document.createElement("p");
   var currentUVEl = document.createElement("div");
   var UV = data.current.uvi;
-    
 
   weatherTodayCard.setAttribute("class", "card");
   cardBody.setAttribute("class", "card-body");
   cityName.setAttribute("class", "card-title");
   cityName.textContent = location + " (" + date +")";
   currentIconEl.innerHTML = "<img src='http://openweathermap.org/img/wn/" + currentIcon + ".png'>"
-  //console.log(currentIcon);
   currentTemp.textContent = "Temp: " + data.current.temp + "°F";
   currentWind.textContent = "Wind: " + data.current.wind_speed + " MPH";
   currentHumidity.textContent = "Humidity: " + data.current.humidity + "%";
@@ -98,12 +107,11 @@ var displayWeather = function(data, location) {
   weatherTodayCard.appendChild(cardBody);
   weatherEl.appendChild(weatherTodayCard);
 
-  //console.log(currentUVEl, UV);
   auditUV(currentUVEl, UV);
 };
 
+// check UV low, moderate or high conditions
 var auditUV = function(currentUVEl, UV) {
-  //console.log(currentUVEl, UV);
   if (UV < 3) {
     $(currentUVEl).removeClass("uv-mod uv-high");
     $(currentUVEl).addClass("uv-low");
@@ -118,6 +126,7 @@ var auditUV = function(currentUVEl, UV) {
   }
 };
 
+// display 5 day forecast
 var displayForecast = function(data) {
   var forecastEl = document.createElement("div");
   var forecastTitle = document.createElement("h5");
@@ -132,7 +141,6 @@ var displayForecast = function(data) {
   //loop over daily forecast
   for (var i=1; i < 6; i++) {
     var date = moment(data.daily[i].dt *1000).format("M/D/YYYY");
-    //console.log(date);
 
     //create a container for each day
     var dayCard = document.createElement("div");
@@ -164,24 +172,23 @@ var displayForecast = function(data) {
 
 };
 
-// TODO: Local storage - location history buttons 
+// load saved locations
+var loadWeatherHistory = function() {
+  var savedWeatherHistory = JSON.parse(window.localStorage.getItem("locations")) || [];
+
+  //create buttons 
+  for (var i=0; i < savedWeatherHistory.length; i++) {
+    var locationButton = document.createElement("button");
+    locationButton.classList = "btn btn-secondary btn-block mt-2";
+    locationButton.innerText = savedWeatherHistory[i];
+    const locationText = savedWeatherHistory[i];
+    weatherHistoryEl.appendChild(locationButton);
+    locationButton.addEventListener("click", function() {
+      getLocationWeather(locationText);
+    });
+  }
+};
 
 searchEl.addEventListener("submit", formSubmitHandler);
-//getLocationWeather();
 
-// User Story
-// AS A traveler
-// I WANT to see the weather outlook for multiple cities
-// SO THAT I can plan a trip accordingly
-// Acceptance Criteria
-// GIVEN a weather dashboard with form inputs
-// WHEN I search for a city
-// THEN I am presented with current and future conditions for that city and that city is added to the search history
-// WHEN I view current weather conditions for that city
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
-// WHEN I view the UV index
-// THEN I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
-// WHEN I view future weather conditions for that city
-// THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
-// WHEN I click on a city in the search history
-// THEN I am again presented with current and future conditions for that city
+loadWeatherHistory();
